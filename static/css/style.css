@@ -1,0 +1,156 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: #121212;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: white;
+}
+
+/* --- Container Card --- */
+.container {
+    width: 1000px;
+    height: 650px;
+    background-color: #1e1e24;
+    border-radius: 20px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* --- Left Side (Image) --- */
+.left-panel {
+    flex: 1;
+    background: linear-gradient(rgba(44, 28, 77, 0.6), rgba(28, 20, 48, 0.9)), url('https://images.unsplash.com/photo-1534067783741-514d4dddb885?q=80&w=1000&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-size: cover;
+    background-image: url("../images/register_bg.jpg");
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: white;
+}
+
+.caption h2 {
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+/* --- Right Side (Form) --- */
+.right-panel {
+    flex: 1;
+    padding: 50px 80px;
+    display: flex;
+    background-size: cover;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.subtitle a {
+    color: #8c7ae6;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* --- Inputs --- */
+.input-box {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+input {
+    width: 100%;
+    background-color: #2b2b36;
+    border: 1px solid #3a3a45;
+    padding: 15px;
+    border-radius: 8px;
+    color: white;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: #8c7ae6;
+    background-color: #32323e;
+}
+
+/* --- Buttons --- */
+.btn-submit {
+    width: 100%;
+    padding: 15px;
+    background-color: #6c5ce7;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.btn-submit:hover {
+    background-color: #5f4dd0;
+}
+
+/* --- Flash Messages --- */
+.alert {
+    color: #ff6b6b;
+    font-size: 14px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 107, 107, 0.1);
+    border-radius: 5px;
+}
+
+/* --- Dashboard Specific --- */
+.dashboard-container {
+    width: 90%;
+    max-width: 1200px;
+    background: #1e1e24;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.video-frame {
+    border: 5px solid #333;
+    border-radius: 15px;
+    margin: 20px 0;
+    max-width: 100%;
+}
+
+.btn-logout {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #ff4757;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
