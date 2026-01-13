@@ -1,24 +1,23 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
+from datetime import datetime  # <--- NEW: Required for timestamps
+from flask import Flask, render_template, request, redirect, url_for, session, flash, Response,jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # --- 1. IMPORT ANALYTICS & CAMERA ---
 try:
     from detection import VideoCamera
-    # THIS LINE IS CRITICAL: We import BOTH functions here
-    from analytics import calculate_engagement, get_all_reports 
+    # We only need calculate_engagement now. We don't need get_all_reports anymore.
+    from analytics import calculate_engagement 
 except ImportError:
     print("WARNING: detection.py or analytics.py not found.")
     class VideoCamera: pass
     def calculate_engagement(f): return 0
-    def get_all_reports(): return []
 
 app = Flask(__name__)
 app.secret_key = "mca_project_secret_key"
 
 # --- 2. GLOBAL CAMERA VARIABLE ---
-# This holds the camera so we can stop it later
 global_camera = None 
 
 # --- DATABASE SETUP ---
@@ -29,12 +28,25 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# USER MODEL 
+# --- MODELS ---
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    # Relationship to access reports easily (optional but good practice)
+    reports = db.relationship('Report', backref='author', lazy=True)
+
+# --- NEW CLASS: REPORT ---
+# This table stores the history for each user
+class Report(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    # Link this report to a specific user
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    filename = db.Column(db.String(100), nullable=False)
+    score = db.Column(db.Float, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
 # Create DB if not exists
 with app.app_context():
@@ -115,13 +127,19 @@ def video_feed():
         global_camera = VideoCamera()
     return Response(gen(global_camera), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-# --- STOP ANALYSIS & SHOW REPORT ---
+# --- STOP ANALYSIS & SAVE TO DB ---
 @app.route('/stop_analysis')
 def stop_analysis():
     global global_camera 
     final_score = 0
     filename = None
     
+    # Security Check: Ensure user is logged in
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    current_user_id = session['user_id']
+
     if global_camera:
         # 1. Stop Camera and Save CSV
         filename = global_camera.stop_and_save()
@@ -129,24 +147,49 @@ def stop_analysis():
         # 2. Reset Camera
         global_camera = None 
         
-        # 3. Calculate Score
+        # 3. Calculate Score AND Save to Database
         if filename:
+            # Calculate the score (math)
             final_score = calculate_engagement(filename)
+            
+            # --- SAVE TO DATABASE ---
+            # This links the file to the specific logged-in user
+            new_report = Report(
+                user_id=current_user_id,
+                filename=os.path.basename(filename), # e.g., session_20260212.csv
+                score=final_score
+            )
+            db.session.add(new_report)
+            db.session.commit()
+            print(f"Saved report for User {current_user_id} to Database.")
     
     # 4. Show Report Page
     return render_template('report.html', score=final_score)
 
-# --- ARCHIVES ROUTE ---
+# --- ARCHIVES ROUTE (UPDATED) ---
 @app.route('/archives')
 def archives():
+    # 1. Security Check
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    # 1. Get list of files from analytics.py
-    past_reports = get_all_reports()
+    # 2. Query Database
+    # Fetch only reports that match the current User ID
+    user_reports = Report.query.filter_by(user_id=session['user_id']).order_by(Report.timestamp.desc()).all()
     
-    # 2. Show the list
-    return render_template('archives.html', reports=past_reports)
+    # 3. Format Data for Template
+    # We convert the database objects into a clean list of dictionaries
+    formatted_reports = []
+    for report in user_reports:
+        formatted_reports.append({
+            'date': report.timestamp.strftime("%b %d, %Y %I:%M %p"), # Format: Feb 12, 2026 01:30 PM
+            'score': report.score,
+            'filename': report.filename
+        })
+    
+    # 4. Send the filtered list
+    return render_template('archives.html', reports=formatted_reports)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
