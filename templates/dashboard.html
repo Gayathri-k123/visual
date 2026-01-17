@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Session</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <h1>Welcome, {{ username }}!</h1>
+        <p class="subtitle">Real-Time Visual Attention Analysis System</p>
+        
+        <hr style="border-color: #333; margin: 20px 0;">
+
+        <!-- Video Feed -->
+        <div class="video-container">
+            <img src="{{ url_for('video_feed') }}" class="video-frame" width="640" height="480">
+        </div>
+
+        <p class="subtitle">
+            <span style="color: #00ff00;">● Attentive</span> &nbsp; 
+            <span style="color: #ff9900;">● Looking Away</span> &nbsp; 
+            <span style="color: #ff0000;">● Drowsy</span>
+        </p>
+
+        <br>
+        <a href="/logout" class="btn-logout">End Session & Logout</a>
+    </div>
+
+</body>
+</html>

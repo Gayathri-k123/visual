@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Attention Analysis</title>
+    <!-- Link to the CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Form Side -->
+        <div class="right-panel">
+            <h1>Welcome Back</h1>
+            <p class="subtitle">Don't have an account? <a href="/register">Sign Up</a></p>
+
+            <form action="/login" method="POST">
+                <!-- Error Messages -->
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <div class="alert">{{ messages[0] }}</div>
+                  {% endif %}
+                {% endwith %}
+
+                <div class="input-box">
+                    <input type="email" name="email" placeholder="Email Address" required>
+                </div>
+                <div class="input-box">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Log In</button>
+            </form>
+        </div>
+
+        <!-- Image Side -->
+        <div class="left-panel">
+            <img src="{{ url_for('static', filename='images/register_bg.jpg') }}" alt="Login Image">
+            
+        </div>
+    </div>
+
+</body>
+</html>

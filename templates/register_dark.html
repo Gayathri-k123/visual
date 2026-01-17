@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - Attention Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Image Side -->
+        <div class="left-panel">
+            <img src="{{ url_for('static', filename='images/register_bg.jpg') }}" alt="Login Image">
+            
+        </div>
+
+        <!-- Form Side -->
+        <div class="right-panel">
+            <h1>Create Account</h1>
+            <p class="subtitle">Already have an account? <a href="/login">Log in</a></p>
+
+            <form action="/register" method="POST">
+                <!-- Error Messages -->
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <div class="alert">{{ messages[0] }}</div>
+                  {% endif %}
+                {% endwith %}
+
+                <div class="input-box">
+                    <input type="text" name="username" placeholder="Username" required>
+                </div>
+                <div class="input-box">
+                    <input type="email" name="email" placeholder="Email Address" required>
+                </div>
+                <div class="input-box">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Register</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
