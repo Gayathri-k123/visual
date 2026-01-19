@@ -98,5 +98,11 @@ def gen(camera):
 def video_feed():
     return Response(gen(VideoCamera()), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/monitor')
+def monitor():
+    # Security check: User must be logged in
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('monitor.html')
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,5 +1,8 @@
 /* Import Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+/* =========================================
+   1. GLOBAL RESET & FONTS
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 * {
     margin: 0;
@@ -9,148 +12,253 @@
 }
 
 body {
-    background-color: #121212;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 100%;
     min-height: 100vh;
-    color: white;
-}
-
-/* --- Container Card --- */
-.container {
-    width: 1000px;
-    height: 650px;
-    background-color: #1e1e24;
-    border-radius: 20px;
     display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Main Background Image (Dark Office) */
+    background: url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop') no-repeat center center/cover;
+    background-color: #0f172a;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-/* --- Left Side (Image) --- */
-.left-panel {
-    flex: 1;
-    background: linear-gradient(rgba(44, 28, 77, 0.6), rgba(28, 20, 48, 0.9)), url('https://images.unsplash.com/photo-1534067783741-514d4dddb885?q=80&w=1000&auto=format&fit=crop');
-    background-size: cover;
-    background-position: center;
-    background-size: cover;
-    background-image: url("../images/register_bg.jpg");
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    color: white;
+/* Dark overlay on top of body background to make the tablet pop */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: -1;
 }
 
-.caption h2 {
-    font-size: 32px;
-    font-weight: 600;
-    line-height: 1.2;
+/* =========================================
+   2. THE GLOWING GLASS CONTAINER
+   ========================================= */
+.container {
+    width: 900px;
+    height: 550px;
+    
+    /* Glass Effect */
+    background: rgba(15, 23, 42, 0.6); /* Dark Blue/Black tint */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    
+    /* Borders & Rounding */
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    
+    /* The Glowing Neon Effect (Cyan/White) */
+    box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 0 30px rgba(34, 211, 238, 0.15), /* Outer Cyan Glow */
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+        
+    display: flex; /* Side-by-side layout */
+    overflow: hidden; /* Clips the corners of the image */
+    position: relative;
+    z-index: 10;
 }
 
-/* --- Right Side (Form) --- */
+/* =========================================
+   3. LEFT SIDE (The Form)
+   Note: Your HTML calls this "right-panel", 
+   but it is the first div, so it appears on the left.
+   ========================================= */
 .right-panel {
-    flex: 1;
-    padding: 50px 80px;
+    flex: 1; /* Takes 50% width */
+    padding: 60px 50px;
     display: flex;
-    background-size: cover;
     flex-direction: column;
     justify-content: center;
+    background: rgba(0,0,0,0.2); /* Slight shadow for text readability */
 }
 
+/* Typography */
 h1 {
-    font-size: 32px;
+    font-size: 2.2rem;
+    color: white;
+    font-weight: 700;
     margin-bottom: 10px;
 }
 
 .subtitle {
-    color: #888;
-    font-size: 14px;
-    margin-bottom: 30px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 40px;
 }
 
 .subtitle a {
-    color: #8c7ae6;
+    color: #8b5cf6; /* Purple link */
     text-decoration: none;
     font-weight: 600;
 }
 
-/* --- Inputs --- */
+/* Inputs */
 .input-box {
+    margin-bottom: 20px;
     width: 100%;
-    margin-bottom: 15px;
 }
 
 input {
     width: 100%;
-    background-color: #2b2b36;
-    border: 1px solid #3a3a45;
     padding: 15px;
-    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05); /* Very subtle fill */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     color: white;
-    font-size: 15px;
+    font-size: 1rem;
     outline: none;
     transition: 0.3s;
 }
 
+input::placeholder { color: rgba(255, 255, 255, 0.3); }
+
 input:focus {
-    border-color: #8c7ae6;
-    background-color: #32323e;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #8b5cf6; /* Purple focus border */
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
 }
 
-/* --- Buttons --- */
+/* Button */
 .btn-submit {
     width: 100%;
     padding: 15px;
-    background-color: #6c5ce7;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
     margin-top: 10px;
+    /* Purple Gradient */
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .btn-submit:hover {
-    background-color: #5f4dd0;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.5);
 }
 
-/* --- Flash Messages --- */
+/* =========================================
+   4. RIGHT SIDE (The Image)
+   Your HTML calls this "left-panel".
+   ========================================= */
+.left-panel {
+    flex: 1; /* Takes 50% width */
+    position: relative;
+    overflow: hidden;
+}
+
+.left-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image covers area without stretching */
+    display: block;
+}
+
+/* Optional overlay on the image to make it blend with the dark theme */
+.left-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(15, 23, 42, 0.8), transparent);
+}
+
+/* =========================================
+   5. ALERTS
+   ========================================= */
 .alert {
-    color: #ff6b6b;
-    font-size: 14px;
-    margin-bottom: 15px;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
     padding: 10px;
-    background: rgba(255, 107, 107, 0.1);
-    border-radius: 5px;
-}
-
-/* --- Dashboard Specific --- */
-.dashboard-container {
-    width: 90%;
-    max-width: 1200px;
-    background: #1e1e24;
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-}
-
-.video-frame {
-    border: 5px solid #333;
-    border-radius: 15px;
-    margin: 20px 0;
-    max-width: 100%;
-}
-
-.btn-logout {
-    display: inline-block;
-    padding: 12px 25px;
-    background-color: #ff4757;
-    color: white;
-    text-decoration: none;
     border-radius: 8px;
-    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
 }
+
+/* --- RESET & BASICS --- */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { width: 100%; min-height: 100vh; display: flex; align-items: center; justify-content: center; background-color: #0f172a; overflow: hidden; }
+
+        /* --- BACKGROUND --- */
+.bg-image {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop');
+            background-size: cover; background-position: center; z-index: 0;
+        }
+        .bg-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 1; }
+
+        /* --- GLASS PANEL --- */
+        .glass-dashboard {
+            position: relative; z-index: 10; width: 90%; max-width: 1200px; height: 85vh;
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; padding: 3rem; color: white; overflow: hidden;
+        }
+
+        /* --- HEADER & LOGOUT --- */
+        .header-top { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 2rem; }
+        
+        .logout-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 20px;
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            background: rgba(248, 113, 113, 0.1);
+            color: #fca5a5;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 0.85rem; font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover {
+            background: rgba(248, 113, 113, 0.25); border-color: #f87171; color: white;
+            box-shadow: 0 0 15px rgba(248, 113, 113, 0.3);
+        }
+
+        .title-section h1 { font-size: 3rem; font-weight: 700; letter-spacing: -1px; text-shadow: 0 4px 10px rgba(0,0,0,0.3); margin-bottom: 0.5rem; }
+        .title-section p { color: #bae6fd; font-size: 1.2rem; font-weight: 300; }
+
+        /* --- CARDS --- */
+        .cards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 3rem; margin-bottom: auto; }
+        .card {
+            background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px; padding: 2rem; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 1rem; cursor: pointer; transition: all 0.3s ease; text-decoration: none; color: white;
+        }
+        .card svg { width: 48px; height: 48px; stroke: white; stroke-width: 1.5; }
+        
+        /* Cyan Card */
+        .card.cyan { border-color: rgba(34, 211, 238, 0.3); }
+        .card.cyan:hover { border-color: #22d3ee; box-shadow: 0 0 20px rgba(34, 211, 238, 0.3); transform: translateY(-5px); }
+        .btn-pill { padding: 6px 16px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        .btn-pill.cyan { background: rgba(34, 211, 238, 0.2); color: #67e8f9; border: 1px solid rgba(34, 211, 238, 0.4); }
+
+        /* Orange Card */
+        .card.orange { border-color: rgba(251, 146, 60, 0.3); }
+        .card.orange:hover { border-color: #fb923c; box-shadow: 0 0 20px rgba(251, 146, 60, 0.3); transform: translateY(-5px); }
+        .btn-pill.orange { background: rgba(251, 146, 60, 0.2); color: #fdba74; border: 1px solid rgba(251, 146, 60, 0.4); }
+
+        /* Blue Card */
+        .card.blue { border-color: rgba(96, 165, 250, 0.3); }
+        .card.blue:hover { border-color: #60a5fa; box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); transform: translateY(-5px); }
+        .btn-pill.blue { background: rgba(96, 165, 250, 0.2); color: #93c5fd; border: 1px solid rgba(96, 165, 250, 0.4); }
+
+        /* --- CHART --- */
+        .chart-container { position: relative; width: 100%; height: 120px; margin-top: 20px; opacity: 0.8; }
+        .dashed-line { position: absolute; top: 50%; left: 0; width: 100%; border-top: 1px dashed rgba(255, 255, 255, 0.2); }
+
+        /* --- FOOTER --- */
+        .footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+        .footer-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: rgba(255,255,255,0.7); font-size: 0.75rem; text-transform: uppercase; cursor: pointer; }
+        .footer-item:hover { color: #22d3ee; }
+        .pagination { display: flex; gap: 8px; margin-bottom: 10px; }
+        .page-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); }
+        .page-dot.active { background: #22d3ee; box-shadow: 0 0 10px #22d3ee; }
+    
+      
+   
