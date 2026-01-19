@@ -18,9 +18,8 @@ class VideoCamera(object):
         else:
             print("WARNING: Model not found. Head tracking disabled.")
 
-        # --- 2. SETUP MEDIAPIPE ---
+        #  SETUP MEDIAPIPE 
         self.mp_face_mesh = mp.solutions.face_mesh
-        # refine_landmarks=True gives us detailed eye points (478 total)
         self.face_mesh = self.mp_face_mesh.FaceMesh(
             min_detection_confidence=0.5, 
             min_tracking_confidence=0.5,
@@ -33,7 +32,7 @@ class VideoCamera(object):
     def __del__(self):
         self.video.release()
 
-    # --- 3. HELPER FUNCTION: EAR ---
+    #  HELPER FUNCTION: EAR 
     def calculate_EAR(self, eye_points, landmarks):
         try:
             A = dist.euclidean(landmarks[eye_points[1]], landmarks[eye_points[5]])
@@ -76,7 +75,7 @@ class VideoCamera(object):
                     face_row.append(lm.y)
                     face_row.append(lm.z)
 
-                # --- B. CHECK EYES (Math) ---
+                # CHECK EYES 
                 LEFT_EYE = [33, 160, 158, 133, 153, 144] 
                 RIGHT_EYE = [362, 385, 387, 263, 373, 380]
 
@@ -85,10 +84,10 @@ class VideoCamera(object):
                 avgEAR = (leftEAR + rightEAR) / 2.0
 
                 if avgEAR < 0.25:
-                    status = "Drowsy / Sleeping"
+                    status = " Sleeping"
                     box_color = (0, 0, 255) # Red
                 else:
-                    # --- C. CHECK HEAD POSE (ML) ---
+                    # CHECK HEAD POSE (ML) 
                     if self.model:
                         row_df = pd.DataFrame([face_row])
                         prediction = self.model.predict(row_df)[0]
@@ -102,7 +101,7 @@ class VideoCamera(object):
                     else:
                         status = "Model Missing"
 
-                # --- D. DRAW UI ON FRAME ---
+                
                 # Draw Box
                 cv2.rectangle(image, (0,0), (320, 60), (245, 117, 16), -1)
                 # Draw Text

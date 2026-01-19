@@ -21,7 +21,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# --- USER MODEL ---
+# USER MODEL 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), nullable=False)
@@ -32,7 +32,7 @@ class User(db.Model):
 with app.app_context():
     db.create_all()
 
-# --- ROUTES ---
+#  ROUTES 
 
 @app.route('/')
 def home():
@@ -85,7 +85,7 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-# --- CAMERA FEED ---
+# CAMERA FEED 
 def gen(camera):
     while True:
         # Get frame from detection.py
