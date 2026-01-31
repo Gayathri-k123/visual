@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Past Reports</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1 { color: #22d3ee; margin-bottom: 40px; }
+        
+        .table-container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 15px;
+            color: #94a3b8;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        tr:last-child td { border-bottom: none; }
+        
+        /* Scores Colors */
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .good { background: rgba(76, 175, 80, 0.2); color: #4CAF50; border: 1px solid #4CAF50; }
+        .avg { background: rgba(255, 193, 7, 0.2); color: #FFC107; border: 1px solid #FFC107; }
+        .bad { background: rgba(244, 67, 54, 0.2); color: #F44336; border: 1px solid #F44336; }
+
+        .btn-back {
+            margin-top: 30px;
+            color: #22d3ee;
+            text-decoration: none;
+            border: 1px solid #22d3ee;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .btn-back:hover { background: #22d3ee; color: #0f172a; }
+    </style>
+</head>
+<body>
+
+    <h1>Analysis Archives</h1>
+
+    <div class="table-container">
+        <!-- FLASK LOGIC STARTS HERE -->
+        {% if reports %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Engagement Score</th>
+                        <th>Performance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr>
+                        <td>{{ report.date }}</td>
+                        <td>
+                            <!-- Color Logic -->
+                            {% if report.score >= 70 %}
+                                <span class="badge good">{{ report.score }}%</span>
+                            {% elif report.score >= 40 %}
+                                <span class="badge avg">{{ report.score }}%</span>
+                            {% else %}
+                                <span class="badge bad">{{ report.score }}%</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if report.score >= 70 %} Excellent
+                            {% elif report.score >= 40 %} Average
+                            {% else %} Low Attention {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <!-- If no files exist yet -->
+            <p style="text-align:center; color: #94a3b8; padding: 20px;">
+                No reports found. Run a detection session first!
+            </p>
+        {% endif %}
+    </div>
+
+    <a href="{{ url_for('home') }}" class="btn-back">Back to Dashboard</a>
+
+</body>
+</html>
