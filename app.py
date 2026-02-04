@@ -190,6 +190,53 @@ def archives():
     # 4. Send the filtered list
     return render_template('archives.html', reports=formatted_reports)
 
+# --- HEATMAP DATA API ---
+@app.route('/heatmap_data')
+def heatmap_data():
+    if 'user_id' not in session:
+        return jsonify([]) 
 
+    # 1. Get all reports for the current user
+    reports = Report.query.filter_by(user_id=session['user_id']).all()
+
+    # 2. Prepare a 7x24 Grid (7 Days, 24 Hours)
+    # Day 0 = Mon, Day 6 = Sun
+    data_grid = {} # Key: "Day-Hour", Value: {total_score, count}
+    
+    days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+    # Initialize grid with 0
+    for day in days:
+        for hour in range(24):
+            data_grid[f"{day}-{hour}"] = {'total': 0, 'count': 0}
+
+    # 3. Fill with Database Data
+    for r in reports:
+        # Get Day Name (e.g., "Mon") and Hour (e.g., 14)
+        day_name = r.timestamp.strftime("%a") 
+        hour = r.timestamp.hour
+        key = f"{day_name}-{hour}"
+        
+        if key in data_grid:
+            data_grid[key]['total'] += r.score
+            data_grid[key]['count'] += 1
+
+    # 4. Format for ApexCharts
+    series_data = []
+    for day in days:
+        day_points = []
+        for hour in range(24):
+            key = f"{day}-{hour}"
+            avg = 0
+            if data_grid[key]['count'] > 0:
+                avg = round(data_grid[key]['total'] / data_grid[key]['count'], 1)
+            
+            day_points.append({
+                'x': f"{hour}:00",
+                'y': avg
+            })
+        series_data.append({'name': day, 'data': day_points})
+
+    return jsonify(series_data)
 if __name__ == '__main__':
     app.run(debug=True)
