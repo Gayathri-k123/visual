@@ -134,7 +134,7 @@ def stop_analysis():
     final_score = 0
     filename = None
     
-    # Security Check: Ensure user is logged in
+    # Security Check: Ensure users is logged in
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
