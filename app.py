@@ -167,28 +167,7 @@ def stop_analysis():
     return render_template('report.html', score=final_score)
 
 # --- ARCHIVES ROUTE (UPDATED) ---
-@app.route('/archives')
-def archives():
-    # 1. Security Check
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    # 2. Query Database
-    # Fetch only reports that match the current User ID
-    user_reports = Report.query.filter_by(user_id=session['user_id']).order_by(Report.timestamp.desc()).all()
-    
-    # 3. Format Data for Template
-    # We convert the database objects into a clean list of dictionaries
-    formatted_reports = []
-    for report in user_reports:
-        formatted_reports.append({
-            'date': report.timestamp.strftime("%b %d, %Y %I:%M %p"), # Format: Feb 12, 2026 01:30 PM
-            'score': report.score,
-            'filename': report.filename
-        })
-    
-    # 4. Send the filtered list
-    return render_template('archives.html', reports=formatted_reports)
+
 
 # --- HEATMAP DATA API ---
 @app.route('/heatmap_data')
