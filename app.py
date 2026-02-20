@@ -3,6 +3,7 @@ from datetime import datetime  # <--- NEW: Required for timestamps
 from flask import Flask, render_template, request, redirect, url_for, session, flash, Response,jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from report_generator import generate_pdf_bytes
 
 # --- 1. IMPORT ANALYTICS & CAMERA ---
 try:
@@ -127,45 +128,43 @@ def video_feed():
         global_camera = VideoCamera()
     return Response(gen(global_camera), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
 # --- STOP ANALYSIS & SAVE TO DB ---
 @app.route('/stop_analysis')
 def stop_analysis():
     global global_camera 
     final_score = 0
-    filename = None
+    report_id = None
     
-    # Security Check: Ensure users is logged in
+    violation_reason = request.args.get('violation')
+
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
     current_user_id = session['user_id']
 
     if global_camera:
-        # 1. Stop Camera and Save CSV
         filename = global_camera.stop_and_save()
-        
-        # 2. Reset Camera
         global_camera = None 
         
-        # 3. Calculate Score AND Save to Database
         if filename:
-            # Calculate the score (math)
             final_score = calculate_engagement(filename)
             
-            # --- SAVE TO DATABASE ---
-            # This links the file to the specific logged-in user
+            # --- PENALTY LOGIC ---
+            if violation_reason == 'tab_switch':
+                print("Session terminated due to Tab Switching.")
+                final_score = 0  # <--- THIS MUST BE UNCOMMENTED
+            
             new_report = Report(
                 user_id=current_user_id,
-                filename=os.path.basename(filename), # e.g., session_20260212.csv
+                filename=os.path.basename(filename),
                 score=final_score
             )
             db.session.add(new_report)
             db.session.commit()
-            print(f"Saved report for User {current_user_id} to Database.")
-    
-    # 4. Show Report Page
-    return render_template('report.html', score=final_score)
+            report_id = new_report.id
 
+    return render_template('report.html', score=final_score, report_id=report_id, violation=violation_reason)
 # --- ARCHIVES ROUTE  ---
 @app.route('/archives')
 def archives():
@@ -238,5 +237,34 @@ def heatmap_data():
         series_data.append({'name': day, 'data': day_points})
 
     return jsonify(series_data)
+@app.route('/download_report/<int:report_id>')
+def download_report(report_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    # 1. Get Data from DB
+    report = Report.query.get_or_404(report_id)
+    user = User.query.get(session['user_id'])
+    
+    # 2. Security Check
+    if report.user_id != user.id:
+        return "Unauthorized Access", 403
+
+    # 3. Use the function from the other file
+    pdf_content = generate_pdf_bytes(
+        username=user.username,
+        email=user.email,
+        date_str=report.timestamp.strftime('%B %d, %Y'),
+        time_str=report.timestamp.strftime('%I:%M %p'),
+        score=report.score,
+        report_id=report.id
+    )
+
+    # 4. Download the file
+    return Response(
+        pdf_content, 
+        mimetype='application/pdf', 
+        headers={'Content-Disposition': f'attachment;filename=Report_{report.id}.pdf'}
+    )
 if __name__ == '__main__':
     app.run(debug=True)
