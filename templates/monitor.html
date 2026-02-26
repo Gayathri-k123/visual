@@ -51,16 +51,27 @@
         }
         .btn-stop:hover { background-color: #dc2626; transform: scale(1.05); }
     </style>
+    <script>
+    // --- NEW: Add a variable to track if they clicked stop ---
+    let isStopping = false;
+
+    document.addEventListener("visibilitychange", function() {
+        // Only trigger cheating if they DID NOT click the stop button
+        if (document.hidden && !isStopping) {
+            alert("Violation Detected: You switched tabs. The session will now end.");
+            window.location.href = "{{ url_for('stop_analysis', violation='tab_switch') }}";
+        }
+    });
+    </script>
 </head>
 <body>
     <div class="container">
         <h1>Real-Time Analysis Running...</h1>
-        
-        <!-- THIS LINKS TO YOUR FLASK VIDEO FEED ROUTE -->
         <img src="{{ url_for('video_feed') }}" class="video-feed" alt="Camera Feed">
-        
         <br>
-        <a href="{{ url_for('stop_analysis') }}" class="btn-stop">
+        
+        <!-- NEW: Added onclick="isStopping = true;" here -->
+        <a href="{{ url_for('stop_analysis') }}" class="btn-stop" onclick="isStopping = true;">
             Stop Analysis & Generate Report
         </a>   
      </div>

@@ -2,110 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analysis Report</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #0f172a; /* Dark Blue Theme */
-            color: white;
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .report-card {
-            background: rgba(255, 255, 255, 0.05); /* Glass effect */
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            max-width: 400px;
-            width: 90%;
-            animation: fadeIn 0.8s ease-in-out;
-        }
-
-        h1 {
-            color: #22d3ee; /* Cyan */
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        p {
-            color: #94a3b8; /* Gray text */
-            margin-bottom: 30px;
-        }
-
-        .score-circle {
-            position: relative;
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background: conic-gradient(#4CAF50 var(--score), rgba(255,255,255,0.1) 0deg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 30px auto;
-            box-shadow: 0 0 30px rgba(76, 175, 80, 0.2);
-        }
-
-        .score-inner {
-            width: 130px;
-            height: 130px;
-            background-color: #0f172a;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            font-weight: bold;
-            color: #ffffff;
-        }
-
-        .btn-home {
-            display: inline-block;
-            padding: 12px 30px;
-            background-color: #22d3ee;
-            color: #0f172a;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: transform 0.2s;
-        }
-
-        .btn-home:hover {
-            transform: scale(1.05);
-            background-color: #67e8f9;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        body { margin: 0; padding: 0; background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .report-card { background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 20px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 400px; width: 90%; }
+        h1 { color: #22d3ee; font-size: 24px; margin-bottom: 10px; }
+        p { color: #94a3b8; margin-bottom: 30px; }
+        .score-circle { position: relative; width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(var(--color, #22d3ee) var(--score), rgba(255,255,255,0.1) 0deg); display: flex; align-items: center; justify-content: center; margin: 0 auto 30px auto; }
+        .score-inner { width: 130px; height: 130px; background-color: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: #ffffff; }
+        .btn-container { display: flex; flex-direction: column; gap: 15px; align-items: center; width: 100%; }
+        .btn { display: block; width: 80%; padding: 12px 0; text-decoration: none; border-radius: 50px; font-weight: 600; transition: transform 0.2s; cursor: pointer; }
+        .btn:hover { transform: scale(1.05); }
+        .btn-download { background-color: #22d3ee; color: #0f172a; }
+        .btn-home { background-color: transparent; color: #94a3b8; border: 2px solid #334155; }
+        .btn-home:hover { border-color: #94a3b8; color: white; background-color: rgba(255, 255, 255, 0.05); }
+        .violation-text { color: #ffcccc !important; background-color: rgba(255, 0, 0, 0.2); padding: 10px; border-radius: 10px; border: 1px solid rgba(255, 0, 0, 0.3); }
     </style>
 </head>
 <body>
-
     <div class="report-card">
-        <h1>Analysis Complete</h1>
-        <p>Here is your calculated engagement score based on attention span and blinking patterns.</p>
+        
+        {% if score == 0 or violation == 'tab_switch' %}
+            <h1 style="color: #ff4d4d;">SESSION TERMINATED</h1>
+            <p class="violation-text">
+                ⚠️ <strong>Violation Detected:</strong> Tab Switching.<br>
+                The session was stopped automatically because you left the exam screen.
+            </p>
+            {% set circle_color = '#ff4d4d' %}
+            {% set shadow_color = 'rgba(255, 77, 77, 0.4)' %}
+        {% else %}
+            <h1>Analysis Complete</h1>
+            <p>Here is your calculated engagement score based on attention span and blinking patterns.</p>
+            {% set circle_color = '#22d3ee' %}
+            {% set shadow_color = 'rgba(34, 211, 238, 0.4)' %}
+        {% endif %}
 
-        <!-- The Score Circle -->
-        <!-- We use inline styles to set the variable --score dynamically from Python -->
-        <div class="score-circle" style="--score: {{ score }}%;">
+        <!-- The Score Circle uses the dynamic colors based on the IF statement above -->
+        <div class="score-circle" style="--score: {{ score }}%; --color: {{ circle_color }}; box-shadow: 0 0 30px {{ shadow_color }};">
             <div class="score-inner">
                 {{ score }}%
             </div>
         </div>
 
-        <a href="{{ url_for('home') }}" class="btn-home">Return to Dashboard</a>
+        <div class="btn-container">
+            {% if report_id %}
+                <a href="{{ url_for('download_report', report_id=report_id) }}" class="btn btn-download">
+                    Download PDF Report
+                </a>
+            {% endif %}
+            <a href="{{ url_for('home') }}" class="btn btn-home">
+                Return to Dashboard
+            </a>
+        </div>
     </div>
-
 </body>
 </html>
