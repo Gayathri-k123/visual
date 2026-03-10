@@ -2,24 +2,180 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Attention Analysis</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Base Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            /* Uses your existing background image with a dark, moody overlay */
+            background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), 
+                        url("{{ url_for('static', filename='images/register_bg.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* The Frosted Glass Container */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05); /* Highly transparent white */
+            backdrop-filter: blur(16px); /* The "frosted glass" blur effect */
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle glowing border */
+            border-radius: 24px;
+            padding: 50px 40px;
+            width: 90%;
+            max-width: 650px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        /* Typography Styling */
+        .main-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .sub-title {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .form-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #cbd5e1;
+            margin-bottom: 25px;
+        }
+
+        .subtitle a {
+            color: #38bdf8; /* Cyan link color */
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .subtitle a:hover {
+            color: #7dd3fc;
+            text-decoration: underline;
+        }
+
+        /* Form Styling */
+        form {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto; 
+        }
+
+        .input-box {
+            margin-bottom: 15px;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 14px 20px;
+            background: rgba(0, 0, 0, 0.3); /* Dark, semi-transparent inputs */
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-box input::placeholder {
+            color: #94a3b8;
+        }
+
+        .input-box input:focus {
+            border-color: #38bdf8; /* Cyan border on click */
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+        }
+
+        /* Button Styling (Cyan Glow) */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            background: rgba(20, 184, 166, 0.1);
+            border: 1px solid #14b8a6;
+            border-radius: 12px;
+            color: #5eead4;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background: rgba(20, 184, 166, 0.25);
+            box-shadow: 0 0 15px rgba(20, 184, 166, 0.4);
+            color: #ffffff;
+        }
+
+        /* Flash Error Messages Styling */
+        .alert {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        /* Decorative glowing lines at the bottom */
+        .glow-lines {
+            position: absolute;
+            bottom: -50px;
+            width: 120%;
+            height: 200px;
+            border-top: 1px solid rgba(0, 229, 255, 0.3);
+            border-radius: 50%;
+            box-shadow: 0 -20px 50px rgba(0, 229, 255, 0.15);
+            z-index: 1;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Image Side -->
-        <div class="left-panel">
-            <img src="{{ url_for('static', filename='images/register_bg.jpg') }}" alt="Login Image">
-            
-        </div>
+    <!-- Decorative glowing wave in the background -->
+    <div class="glow-lines"></div>
 
-        <!-- Form Side -->
-        <div class="right-panel">
-            <h1>Create Account</h1>
+    <div class="glass-panel">
+        <!-- Main Headers -->
+        <h1 class="main-title">Attention & Engagement Analytics</h1>
+        <h3 class="sub-title">Real-Time Human Insight System</h3>
+
+        <!-- Form Area -->
+        <div class="form-section">
+            <h2 class="form-title">Create Account</h2>
             <p class="subtitle">Already have an account? <a href="/login">Log in</a></p>
 
             <form action="/register" method="POST">
+                
                 <!-- Error Messages -->
                 {% with messages = get_flashed_messages() %}
                   {% if messages %}
@@ -34,10 +190,10 @@
                     <input type="email" name="email" placeholder="Email Address" required>
                 </div>
                 <div class="input-box">
-                    <input type="password" name="password" placeholder="Password" required>
+                    <input type="password" name="password" placeholder="••••••••" required>
                 </div>
 
-                <button type="submit" class="btn-submit">Register</button>
+                <button type="submit" class="btn-submit">Sign Up</button>
             </form>
         </div>
     </div>

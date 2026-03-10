@@ -41,7 +41,7 @@ def generate_pdf_bytes(username, email, date_str, time_str, score, report_id):
 
     pdf.ln(20)
     pdf.set_font("Arial", size=10)
-    pdf.cell(200, 10, txt="* This report was generated automatically by the AI Proctoring System.", ln=True)
+    pdf.cell(200, 10, txt="* This report was generated automatically by the Real-Time Human Insight System.", ln=True)
 
     # --- THIS FIXES THE CRASH ---
     out = pdf.output(dest='S')

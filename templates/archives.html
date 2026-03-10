@@ -2,192 +2,368 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Past Reports</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Archives</title>
     
-    <!-- 1. Include ApexCharts Library -->
+    <!-- Include ApexCharts Library -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
     <style>
+        /* Base Reset & Variables */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
         body {
             background-color: #0f172a;
-            color: white;
-            font-family: 'Inter', sans-serif;
-            padding: 40px;
+            color: #cbd5e1;
+            padding: 40px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        
-        h1 { color: #22d3ee; margin-bottom: 20px; }
-        h2 { color: #94a3b8; font-size: 18px; margin-bottom: 15px; text-align: left; width: 100%; }
 
-        /* Shared Container Style for Chart and Table */
-        .content-container {
-            width: 100%;
-            max-width: 900px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 30px; /* Space between chart and table */
+        h1.page-title {
+            color: #22d3ee;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
         }
-        
-        /* Table Styles */
-        table {
+
+        /* Container for the Panels */
+        .dashboard-wrapper {
             width: 100%;
-            border-collapse: collapse;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
         }
-        
-        th {
-            text-align: left;
-            padding: 15px;
+
+        /* Glassmorphism Panel Style */
+        .panel {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-title {
+            color: #94a3b8;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* === TOP PANEL: Heatmap & Sidebar Layout === */
+        .top-grid {
+            display: flex;
+            gap: 20px;
+        }
+
+        .chart-section {
+            flex: 3;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding-right: 20px;
+        }
+
+        .sidebar-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 10px;
+        }
+
+        .stat-block {
+            margin-bottom: 20px;
+        }
+        .stat-block:last-child {
+            margin-bottom: 0;
+        }
+        .stat-label {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        /* === BOTTOM PANEL: Detailed Feed === */
+        .feed-header {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1fr 100px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             color: #94a3b8;
             font-size: 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 500;
+            margin-bottom: 15px;
         }
-        
-        td {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        tr:last-child td { border-bottom: none; }
-        
-        /* Scores Colors */
-        .badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        .good { background: rgba(76, 175, 80, 0.2); color: #4CAF50; border: 1px solid #4CAF50; }
-        .avg { background: rgba(255, 193, 7, 0.2); color: #FFC107; border: 1px solid #FFC107; }
-        .bad { background: rgba(244, 67, 54, 0.2); color: #F44336; border: 1px solid #F44336; }
 
+        .feed-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .feed-list::-webkit-scrollbar { width: 8px; }
+        .feed-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+        .feed-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+        .feed-row {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1fr 100px;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+        .feed-row:last-child { border-bottom: none; }
+
+        /* Feed Badges & Text */
+        .score-bar-container {
+            width: 80%;
+            height: 8px;
+            background: #334155;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            width: 0%; /* Default width, overridden by JS */
+            transition: width 0.5s ease-in-out;
+        }
+
+        .bar-excellent { background-color: #4ade80; }
+        .bar-good { background-color: #facc15; }
+        .bar-low { background-color: #f87171; }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-excellent { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+        .status-good { background: rgba(234, 179, 8, 0.15); color: #facc15; }
+        .status-low { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+        /* Buttons & Utility Classes */
+        .btn-download {
+            background: rgba(34, 211, 238, 0.1);
+            color: #22d3ee;
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .btn-download:hover { background: rgba(34, 211, 238, 0.3); }
+
+        .btn-back-container { text-align: center; margin-top: 30px; }
         .btn-back {
-            margin-top: 10px;
+            display: inline-block;
             color: #22d3ee;
             text-decoration: none;
             border: 1px solid #22d3ee;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 10px 25px;
+            border-radius: 8px;
             transition: 0.3s;
+            font-weight: 500;
         }
         .btn-back:hover { background: #22d3ee; color: #0f172a; }
+
+        .empty-state { text-align: center; color: #64748b; padding: 20px; }
+
+        .custom-tooltip {
+            padding: 10px;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        .custom-tooltip .tooltip-score { font-weight: bold; margin-bottom: 5px; }
+        .custom-tooltip .tooltip-status { font-size: 12px; color: #94a3b8; }
+        .text-excellent { color: #4ade80; }
+        .text-average { color: #facc15; }
+        .text-low { color: #f87171; }
+        .text-nodata { color: #94a3b8; }
+
     </style>
 </head>
 <body>
 
-    <h1>Analysis Archives</h1>
+    <h1 class="page-title">Analysis Archives</h1>
 
-    <!-- SECTION 1: HEATMAP CHART -->
-    <div class="content-container">
-        <h2 style="margin-top:0;">Weekly Focus Intensity</h2>
-        <div id="engagementHeatmap"></div>
-    </div>
+    <!-- JINJA CALCULATIONS FOR SIDEBAR -->
+    {% set ns = namespace(total=0, max=0, min=100, count=0) %}
+    {% for r in reports %}
+        {% set ns.total = ns.total + r.score %}
+        {% set ns.count = ns.count + 1 %}
+        {% if r.score > ns.max %}{% set ns.max = r.score %}{% endif %}
+        {% if r.score < ns.min %}{% set ns.min = r.score %}{% endif %}
+    {% endfor %}
+    {% set avg = (ns.total / ns.count)|round(1) if ns.count > 0 else 0 %}
 
-    <!-- SECTION 2: DATA TABLE -->
-    <div class="content-container">
-        <h2 style="margin-top:0;">Detailed History</h2>
-        <!-- FLASK LOGIC STARTS HERE -->
-        {% if reports %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date & Time</th>
-                        <th>Engagement Score</th>
-                        <th>Performance</th>
-                    </tr>
-                </thead>
-                <tbody>
+    <div class="dashboard-wrapper">
+        
+        <!-- SECTION 1: HEATMAP & SIDEBAR -->
+        <div class="panel">
+            <div class="top-grid">
+                <div class="chart-section">
+                    <h2 class="panel-title">Weekly Focus Intensity</h2>
+                    <div id="engagementHeatmap"></div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h2 class="panel-title">Summary Scores</h2>
+                    <div class="stat-block">
+                        <div class="stat-label">Highest Score</div>
+                        <div class="stat-value">{{ ns.max if ns.count > 0 else 0 }}%</div>
+                    </div>
+                    <div class="stat-block">
+                        <div class="stat-label">Avg. Weekly Score</div>
+                        <div class="stat-value">{{ avg }}%</div>
+                    </div>
+                    <div class="stat-block">
+                        <div class="stat-label">Low Point</div>
+                        <div class="stat-value">{{ ns.min if ns.count > 0 else 0 }}%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: DETAILED FEED LIST -->
+        <div class="panel">
+            <h2 class="panel-title">Detailed History and User Score Feed</h2>
+            <div class="feed-header">
+                <div>Date & Time</div>
+                <div>Engagement Score</div>
+                <div>Performance</div>
+                <div>Action</div>
+            </div>
+
+            <div class="feed-list">
+                {% if reports %}
                     {% for report in reports %}
-                    <tr>
-                        <td>{{ report.date }}</td>
-                        <td>
-                            <!-- Color Logic -->
+                    <div class="feed-row">
+                        <div>{{ report.date }}</div>
+                        <div>
+                            <span style="font-size: 13px; font-weight: 600;">{{ report.score }}%</span>
+                            <div class="score-bar-container">
+                                <!-- NO INLINE STYLE HERE: Using data-width attribute instead to prevent VS Code errors -->
+                                <div class="score-bar-fill {% if report.score >= 70 %}bar-excellent{% elif report.score >= 40 %}bar-good{% else %}bar-low{% endif %}" 
+                                     data-width="{{ report.score }}%">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
                             {% if report.score >= 70 %}
-                                <span class="badge good">{{ "%.1f"|format(report.score) }}%</span>
+                                <span class="status-badge status-excellent">✅ Excellent</span>
                             {% elif report.score >= 40 %}
-                                <span class="badge avg">{{ "%.1f"|format(report.score) }}%</span>
+                                <span class="status-badge status-good">⚠️ Good</span>
                             {% else %}
-                                <span class="badge bad">{{ "%.1f"|format(report.score) }}%</span>
+                                <span class="status-badge status-low">❌ Low Focus</span>
                             {% endif %}
-                        </td>
-                        <td>
-                            {% if report.score >= 70 %} Excellent
-                            {% elif report.score >= 40 %} Average
-                            {% else %} Low Attention {% endif %}
-                        </td>
-                    </tr>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('download_report', report_id=report.id) if report.id else '#' }}" class="btn-download">📄 PDF</a>
+                        </div>
+                    </div>
                     {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <!-- If no files exist yet -->
-            <p style="text-align:center; color: #94a3b8; padding: 20px;">
-                No reports found. Run a detection session first!
-            </p>
-        {% endif %}
+                {% else %}
+                    <div class="empty-state">No session history found.</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="btn-back-container">
+            <a href="{{ url_for('home') }}" class="btn-back">← Back to Dashboard</a>
+        </div>
     </div>
 
-    <a href="{{ url_for('home') }}" class="btn-back">Back to Dashboard</a>
-
-    <!-- JAVASCRIPT FOR CHART -->
+    <!-- JAVASCRIPT -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Fetch data from Flask route
+            
+            // 1. APPLY WIDTHS TO MINI BAR CHARTS (Safely sets CSS width using JS)
+            var scoreBars = document.querySelectorAll('.score-bar-fill');
+            scoreBars.forEach(function(bar) {
+                var w = bar.getAttribute('data-width');
+                if(w) { bar.style.width = w; }
+            });
+
+            // 2. RENDER THE HEATMAP
             fetch('/heatmap_data')
-                .then(response => response.json())
-                .then(data => {
-                    
-                    // Handle empty data
-                    if (data.length === 0) {
-                        document.querySelector("#engagementHeatmap").innerHTML = 
-                            "<p style='text-align:center; color:#94a3b8; padding:20px;'>No data available yet.</p>";
-                        return;
-                    }
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data.length === 0) return;
 
                     var options = {
                         series: data,
                         chart: {
-                            height: 300,
+                            height: 250,
                             type: 'heatmap',
                             toolbar: { show: false },
-                            background: 'transparent', // Transparent to match your container
+                            background: 'transparent',
                             fontFamily: 'Inter, sans-serif'
                         },
                         plotOptions: {
                             heatmap: {
                                 shadeIntensity: 0.5,
-                                radius: 6, // Rounded corners
+                                radius: 4, 
                                 useFillColorAsStroke: false,
                                 colorScale: {
-                                    ranges: [
+                                    ranges:[
                                         { from: 0, to: 0, name: 'No Data', color: '#1e293b' },
-                                        { from: 0.1, to: 40, name: 'Low', color: '#F44336' },     // Matches .bad CSS
-                                        { from: 40.1, to: 70, name: 'Average', color: '#FFC107' }, // Matches .avg CSS
-                                        { from: 70.1, to: 100, name: 'Excellent', color: '#4CAF50' } // Matches .good CSS
+                                        { from: 0.1, to: 40, name: 'Low', color: '#ef4444' },
+                                        { from: 40.1, to: 70, name: 'Average', color: '#eab308' },
+                                        { from: 70.1, to: 100, name: 'Excellent', color: '#22c55e' }
                                     ]
                                 }
                             }
                         },
+                        legend: { position: 'top', labels: { colors: '#94a3b8' }, markers: { radius: 2 } },
                         dataLabels: { enabled: false },
-                        stroke: { width: 1, colors: ['#0f172a'] }, // Matches body bg
-                        title: { text: '' },
-                        xaxis: { 
-                            type: 'category', 
-                            labels: { style: { colors: '#94a3b8' } },
-                            tooltip: { enabled: false }
-                        },
-                        yaxis: { 
-                            labels: { style: { colors: '#94a3b8' } } 
-                        },
+                        stroke: { width: 1, colors: ['#1e293b'] },
+                        xaxis: { type: 'category', labels: { style: { colors: '#64748b' } }, tooltip: { enabled: false } },
+                        yaxis: { labels: { style: { colors: '#64748b' } } },
                         theme: { mode: 'dark' },
                         tooltip: {
                             theme: 'dark',
-                            y: { formatter: function(val) { return val + "% Score"; } }
+                            custom: function(opts) {
+                                var score = opts.series[opts.seriesIndex][opts.dataPointIndex];
+                                var statusClass = "text-low";
+                                var statusText = "Low";
+                                
+                                if (score >= 70) { statusClass = "text-excellent"; statusText = "Excellent"; } 
+                                else if (score >= 40) { statusClass = "text-average"; statusText = "Average"; } 
+                                else if (score === 0) { statusText = "No Data"; statusClass = "text-nodata"; }
+
+                                var scoreDisplay = score > 0 ? score + '%' : 'N/A';
+                                
+                                return '<div class="custom-tooltip">' +
+                                    '<div class="tooltip-score">Score: ' + scoreDisplay + '</div>' +
+                                    '<div class="tooltip-status">Focus Intensity: <span class="' + statusClass + '">' + statusText + '</span></div>' +
+                                '</div>';
+                            }
                         }
                     };
 
